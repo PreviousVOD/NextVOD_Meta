@@ -1,0 +1,48 @@
+name: "Build baremetal toolchain"
+on: ["push"]
+jobs:
+  build:
+    runs-on: "ubuntu:latest"
+    steps:
+    - uses: "actions/checkout@v3"
+      with:
+        repository: "https://github.com/crosstool-ng/crosstool-ng.git"
+        path: "ct_ng"
+    - uses: "actions/checkout@v3"
+      with:
+        path: "meta"
+    - name: "ct-ng dependencies"
+      run: |
+        sudo apt-get install -y gperf help2man libtool-bin meson ninja-build
+        echo "${{ github.workspace }}/.local/bin" >> $GITHUB_PATH
+    - name: "Build ct-ng"
+      run:
+        working-directory: "ct_ng"
+        shell: "./configure --prefix=${{ github.workspace }}/.local/bin && make && make install"
+    - name: "Create build environment"
+      run: "mkdir build && cp meta/Crosstool-NG/defconfig build/defconfig"
+    - name: "Patch defconfig"
+      run:
+        working-directory: "build"
+        shell: |
+          echo CT_LOCAL_TARBALLS_DIR="${{ github.workspace }}/tarballs" >> defconfig
+          echo CT_PREFIX_DIR="${CT_TOP_DIR}/${CT_HOST:+HOST-${CT_HOST}/}${CT_TARGET}" >> defconfig
+    - name: "Tarball cache management"
+      uses: actions/cache@v3
+      with:
+        path: "build/taballs"
+        key: ${{ runner.os }}-ct-ng-tarballs
+    - name: "Build toolchain"
+      run:
+        working-directory: "build"
+        shell: "ct-ng build"
+    - name: "Create toolchain archive"
+      run:
+        working-directory: "build"
+        shell: "tar -cvzf sh-unknown-elf-${{ github.sha }}.tar.gz sh-unknown-elf"
+    - name: "Publish artifact"
+      uses: "actions/upload-artifact@v3"
+        with:
+          name: "toolchain archive"
+          path: "build/sh-unknown-elf-${{ github.sha }}.tar.gz"
+          retention-days: 30
