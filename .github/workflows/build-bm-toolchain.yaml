@@ -17,7 +17,7 @@ jobs:
         echo "${{ github.workspace }}/.local/bin" >> $GITHUB_PATH
     - name: "Build ct-ng"
       working-directory: "ct_ng"
-      run: "./configure --prefix=${{ github.workspace }}/.local/bin && make && make install"
+      run: "./bootstrap && ./configure --prefix=${{ github.workspace }}/.local/bin && make && make install"
     - name: "Create build environment"
       run: "mkdir build && cp meta/Crosstool-NG/defconfig build/defconfig"
     - name: "Patch defconfig"
