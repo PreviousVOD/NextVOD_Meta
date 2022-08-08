@@ -19,12 +19,12 @@ jobs:
       working-directory: "ct_ng"
       run: "./bootstrap && ./configure --prefix=${{ github.workspace }}/.local && make && make install"
     - name: "Create build environment"
-      run: "mkdir build && cp meta/Crosstool-NG/defconfig build/defconfig"
+      run: "mkdir -p build/tarballs && cp meta/Crosstool-NG/defconfig build/defconfig"
     - name: "Patch defconfig & configure build"
       working-directory: "build"
       run: |
           echo CT_LOCAL_TARBALLS_DIR="${{ github.workspace }}/tarballs" >> defconfig
-          echo CT_PREFIX_DIR="${CT_TOP_DIR}/${CT_HOST:+HOST-${CT_HOST}/}${CT_TARGET}" >> defconfig
+          echo CT_PREFIX_DIR="\${CT_TOP_DIR}/\${CT_HOST:+HOST-${CT_HOST}/}\${CT_TARGET}" >> defconfig
           echo CT_LOG_PROGRESS_BAR=n >> defconfig
           ct-ng defconfig
     - name: "Tarball cache management"
