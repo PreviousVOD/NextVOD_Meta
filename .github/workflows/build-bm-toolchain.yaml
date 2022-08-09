@@ -30,7 +30,7 @@ jobs:
     - name: "Tarball cache management"
       uses: actions/cache@v3
       with:
-        path: "build/taballs"
+        path: "build/tarballs"
         key: ${{ runner.os }}-ct-ng-tarballs
     - name: "Build toolchain"
       working-directory: "build"
@@ -43,6 +43,6 @@ jobs:
       with:
         name: "toolchain archive"
         path: |
-          "build/sh-unknown-elf-${{ github.sha }}.tar.gz"
-          "build/build.log"
+          build/sh-unknown-elf-${{ github.sha }}.tar.gz
+          build/build.log
         retention-days: 30
