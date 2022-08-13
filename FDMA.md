@@ -77,7 +77,7 @@ The SLIM CPU has its dedicated instruction memory(IMEM) and data memory(DMEM).
 
 ### Instruction Memory(IMEM)
 The instruction memory mapped in the FDMA space is unique, the upper 8 bits of each 32bit word is
-always zero. Values written to the MSB will read out as 0, resulting the actual IMEM size is 12kB.
+always zero. Values written to the MSB will be ignored, resulting the actual IMEM size is 12kB.
 
 ### Data Memory(DMEM)
 The 8kB data memory is mapped at 0x8000, which can be accessed by both SLIM and the SH4-300 core.
